@@ -1,6 +1,6 @@
 import os
-import sklearn
 import datetime
+from tensorflow import keras
 import pandas as pd
 import numpy as np
 import pickle
@@ -10,7 +10,9 @@ class Logic():
     def __init__(self):
         with open('pickle_model.pkl', 'rb') as file:
             pickle_model = pickle.load(file)
-        self.model = pickle_model
+        
+        json_model = keras.models.load_model('model.json')
+        self.model = json_model
         with open('facilities.json') as json_file:
             self.data = json.load(json_file)
 
@@ -25,12 +27,12 @@ class Logic():
         time = pd.to_datetime(f"{yr}/{m}/{d}T{h}:00:00+00:00")
         wd = time.weekday()
         weekend = (lambda x: 0 if x < 5 else 1)(wd)
-        return np.array(pd.Series({'weekend': weekend, 'weekday': wd, 'hour': h, 'month': m, 'day': d, 'facility_id': facility_id, 'traffic': traffic, 'max_spots': max_spots})).reshape(1, -1)
+        return np.asarray(pd.Series({'weekend': weekend, 'weekday': wd, 'hour': h, 'month': m, 'day': d, 'facility_id': facility_id, 'traffic': traffic, 'max_spots': max_spots})).reshape(1, -1).astype('float32')
         
     def pred(self, facility, date):
         X = self._prepare_data(facility, date)
         pred = self.model.predict(X)
-        return int(pred[0])
+        return int(np.argmax(pred[0]))
 
     def detail(self, facility, date):
         # do konca dnia predykcje preds double

@@ -1,4 +1,5 @@
-### Prediction model w/ logic for SBB Avalier mobile app. Created during STARTHACK21. 
+### Prediction model w/ logic for SBB Avalier mobile app. 
+### Created during STARTHACK21. 
 
 #### FRONT-END:
 
